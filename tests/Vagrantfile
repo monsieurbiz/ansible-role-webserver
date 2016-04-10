@@ -1,0 +1,65 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+$hostname = "webserver.dev"
+$virtualbox_ip = "10.0.0.111";
+
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # Network
+  config.hostmanager.enabled            = true
+  config.hostmanager.manage_host        = true
+  config.hostmanager.ignore_private_ip  = false
+  config.hostmanager.include_offline    = true
+  config.hostmanager.aliases            = ["example.dev"]
+
+  # ooprint's machine
+  config.vm.define $hostname do |web|
+
+    # Which box?
+    web.vm.box = "boxcutter/debian82"
+
+    # VMWare Fusion customization
+    web.vm.provider :vmware_fusion do |vmware, override|
+
+      # Customize VM
+      vmware.vmx["memsize"] = "2048"
+      vmware.vmx["numvcpus"] = "2"
+
+      # Network
+      vmware.vmx["ethernet1.present"] = "TRUE"
+      vmware.vmx["ethernet1.connectionType"] = "hostonly"
+      vmware.vmx["ethernet1.virtualDev"] = "e1000"
+      vmware.vmx["ethernet1.wakeOnPcktRcv"] = "FALSE"
+      vmware.vmx["ethernet1.addressType"] = "generated"
+
+    end
+
+    # Network
+    web.vm.hostname = $hostname
+
+    # Synced folders
+    config.vm.synced_folder "", "/vagrant", nfs: false, mount_options: ["nolock", "async"]
+
+    # Hostmanager
+    web.vm.provision :hostmanager
+
+    # Provision with Ansible
+    config.vm.provision "ansible" do |ansible|
+      ansible.playbook = "test.yml"
+      ansible.groups = {
+        "vagrant" => [$hostname]
+      }
+    end
+
+  end
+
+end
+
+# Local file
+begin
+  load 'LocalVagrantfile.rb'
+rescue LoadError
+  # ignore
+end

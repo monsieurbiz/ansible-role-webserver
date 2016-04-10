@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: vagrant
   remote_user: root
   roles:
     - monsieurbiz.webserver
