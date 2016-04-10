@@ -1,2 +1,203 @@
 ---
 # tasks file for monsieurbiz.webserver
+
+- name: Install dotdeb key
+  become: yes
+  become_user: root
+  apt_key: url={{monsieurbiz_webserver_dotdeb_key_url}}
+  tags: monsieurbiz_webserver_tags
+
+- name: Install dotdeb repository
+  become: yes
+  become_user: root
+  apt_repository: repo='{{item}}'
+  with_items: '{{monsieurbiz_webserver_dotdeb_repositories}}'
+  tags: monsieurbiz_webserver_tags
+
+- name: Create nginx user in www-data group
+  become: yes
+  become_user: root
+  user: name=nginx state=present createhome=no append=true groups=www-data
+  tags: monsieurbiz_webserver_tags
+
+- name: Install nginx
+  become: yes
+  become_user: root
+  apt: name=nginx state=latest
+  notify: restart nginx
+  tags: monsieurbiz_webserver_tags
+
+- name: Update nginx configuration
+  become: yes
+  become_user: root
+  template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
+  notify: restart nginx
+  tags: monsieurbiz_webserver_tags
+
+- name: Set usage of the default vhost
+  become: yes
+  become_user: root
+  file: name=/etc/nginx/sites-enabled/default state={{monsieurbiz_webserver_default_vhost_state}}
+  notify: restart webserver
+  tags: monsieurbiz_webserver_tags
+
+- name: Install PHP-FPM and packages
+  become: yes
+  become_user: root
+  apt: name={{item}} state=latest
+  with_items: '{{monsieurbiz_webserver_php_packages}}'
+  tags: monsieurbiz_webserver_tags
+
+- name: Update php conf
+  become: yes
+  become_user: root
+  replace:
+    dest: "{{ item[0] }}"
+    regexp: "{{ item[1].regexp }}"
+    replace: "{{ item[1].replace }}"
+  with_nested:
+    - '{{monsieurbiz_webserver_php_ini_files}}'
+    - '{{monsieurbiz_webserver_php_ini_config}}'
+  notify: restart webserver
+  tags: monsieurbiz_webserver_tags
+
+- name: Disable default pool of PHP-FPM
+  become: yes
+  become_user: root
+  command: mv {{monsieurbiz_webserver_php_pool_default}} {{monsieurbiz_webserver_php_pool_default}}.disabled creates={{monsieurbiz_webserver_php_pool_default}}.disabled
+  notify: restart webserver
+  tags: monsieurbiz_webserver_tags
+
+# Create environments
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+- name: Create users
+  become: yes
+  become_user: root
+  user:
+    name: "{{ item.user }}"
+    state: present
+    home: "/home/{{ item.user }}"
+    shell: "{{ item.shell }}"
+  with_items: '{{ monsieurbiz_webserver_projects }}'
+  tags: monsieurbiz_webserver_tags
+
+- name: Add users to group
+  become: yes
+  become_user: root
+  user:
+    name: "{{ item.user }}"
+    state: present
+    home: "/home/{{ item.user }}"
+    shell: "{{ item.shell }}"
+    append: true
+    groups: nginx
+  with_items: '{{ monsieurbiz_webserver_projects }}'
+  tags: monsieurbiz_webserver_tags
+
+- name: Create root dir
+  become: yes
+  become_user: "{{ item.0.user }}"
+  file: name={{ item.1.root_dir }} state=directory
+  with_subelements:
+    - '{{ monsieurbiz_webserver_projects }}'
+    - vhosts
+  tags: monsieurbiz_webserver_tags
+
+- name: Change directories user/group
+  become: yes
+  become_user: root
+  file: name={{ item.1.path }} state=directory owner={{ item.1.user }} group={{ item.1.group }} recurse=yes
+  with_subelements:
+    - '{{ monsieurbiz_webserver_projects }}'
+    - chown
+  tags: monsieurbiz_webserver_tags
+
+- name: Create log dir
+  become: yes
+  become_user: nginx
+  file: name={{ item.1.log_dir }} state=directory
+  with_subelements:
+    - '{{ monsieurbiz_webserver_projects }}'
+    - vhosts
+  when: item.1.log_dir
+  tags: [web]
+
+- name: Create PHP-FPM conf
+  become: yes
+  become_user: root
+  template: src=pool.conf.j2 dest={{ monsieurbiz_webserver_php_pool_path }}{{ item.1.priority }}-{{ item.1.identifier }}.conf
+  with_subelements:
+    - '{{ monsieurbiz_webserver_projects }}'
+    - vhosts
+  when: item.1.active
+  notify: restart webserver
+  tags: monsieurbiz_webserver_tags
+
+- name: Remove PHP-FPM conf for inactive vhosts
+  become: yes
+  become_user: root
+  file: name={{ monsieurbiz_webserver_php_pool_path }}{{ item.1.priority}}-{{ item.1.identifier }}.conf state=absent
+  with_subelements:
+    - '{{ monsieurbiz_webserver_projects }}'
+    - vhosts
+  when: not item.1.active
+  notify: restart webserver
+  tags: monsieurbiz_webserver_tags
+
+- name: Create vhost
+  become: yes
+  become_user: root
+  template: src=vhost-{{ item.1.type }}.conf.j2 dest=/etc/nginx/sites-available/{{ item.1.priority }}-{{ item.1.identifier }}.conf
+  with_subelements:
+    - '{{ monsieurbiz_webserver_projects }}'
+    - vhosts
+  notify: restart webserver
+  tags: monsieurbiz_webserver_tags
+
+- name: Active vhost
+  become: yes
+  become_user: root
+  file: state=link src=/etc/nginx/sites-available/{{ item.1.priority }}-{{ item.1.identifier }}.conf dest=/etc/nginx/sites-enabled/{{ item.1.priority }}-{{ item.1.identifier }}.conf
+  with_subelements:
+    - '{{ monsieurbiz_webserver_projects }}'
+    - vhosts
+  when: item.1.active
+  notify: restart webserver
+  tags: monsieurbiz_webserver_tags
+
+- name: Desactive vhost
+  become: yes
+  become_user: root
+  file: state=absent dest=/etc/nginx/sites-enabled/{{ item.1.priority }}-{{ item.1.identifier }}.conf
+  with_subelements:
+    - '{{ monsieurbiz_webserver_projects }}'
+    - vhosts
+  when: not item.1.active
+  tags: monsieurbiz_webserver_tags
+
+#- name: Create certs directory
+#  become: yes
+#  become_user: root
+#  file: state=directory recurse=yes name=/etc/nginx/ssl/ group=nginx
+#  tags: monsieurbiz_webserver_tags
+
+#- name: Copy certificates
+#  become: yes
+#  become_user: root
+#  no_log: yes
+#  copy:
+#    content: "{{ item.content }}"
+#    dest: "{{ item.dir }}{{ item.name }}"
+#    group: nginx
+#    owner: nginx
+#  with_items: certs
+#  tags: monsieurbiz_webserver_tags
+
+- name: Ensure services are running
+  become: yes
+  become_user: root
+  service: name={{ item }} state=started enabled=yes
+  with_items: '{{ monsieurbiz_webserver_services }}'
+  tags: monsieurbiz_webserver_tags
+

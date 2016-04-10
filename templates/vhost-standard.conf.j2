@@ -1,0 +1,50 @@
+# {{ ansible_managed }}
+{% set project = item.0 %}
+{% set vhost = item.1 %}
+
+server {
+    listen *:80;
+    # listen [::]:80 ipv6only=on;
+
+{% if vhost.ssl %}
+    listen *:443 ssl;
+    # listen [::]:443 ssl ipv6only=on;
+{% endif %}
+
+    server_name {{ vhost.server_names }};
+
+{% if vhost.ssl %}
+    # ssl on;
+    ssl_certificate {{ vhost.cert.crt }};
+    ssl_certificate_key {{ vhost.cert.key }};
+{% endif %}
+  
+    root {{ vhost.root_dir }};
+
+    index index.php;
+    autoindex off;
+    charset off;
+
+    add_header 'X-Content-Type-Options' 'nosniff';
+    add_header 'X-XSS-Protection' '1; mode=block';
+
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    location ~ (index|get|static|report|404|503)\.php$ {
+        try_files $uri =404;
+        fastcgi_pass   unix:/var/run/{{monsieurbiz_webserver_php_name}}-fpm__{{ item.0.user }}-{{ item.1.identifier }}.sock;
+
+        fastcgi_param  PHP_FLAG  "session.auto_start=off \n suhosin.session.cryptua=off";
+        fastcgi_param  PHP_VALUE "memory_limit=256M \n max_execution_time=600";
+        fastcgi_read_timeout 600s;
+        fastcgi_connect_timeout 600s;
+
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+    
+}
+

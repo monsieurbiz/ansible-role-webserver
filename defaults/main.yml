@@ -1,2 +1,50 @@
 ---
 # defaults file for monsieurbiz.webserver
+
+monsieurbiz_webserver_tags: [monsieurbiz, webserver, nginx, php]
+
+monsieurbiz_webserver_services:
+  - nginx
+  - "{{ monsieurbiz_webserver_php_name }}-fpm"
+
+monsieurbiz_webserver_default_vhost_state: absent
+
+monsieurbiz_webserver_dotdeb_key_url: http://www.dotdeb.org/dotdeb.gpg
+monsieurbiz_webserver_dotdeb_repositories:
+  - "deb http://packages.dotdeb.org jessie all"
+  - "deb-src http://packages.dotdeb.org jessie all"
+
+monsieurbiz_webserver_php_name: php5 # php7.0
+# with trailing slash
+monsieurbiz_webserver_php_directory: /etc/php5/ # /etc/php/7.0/
+
+monsieurbiz_webserver_php_packages:
+  - "{{ monsieurbiz_webserver_php_name }}-fpm"
+  - "{{ monsieurbiz_webserver_php_name }}-cli"
+  - "{{ monsieurbiz_webserver_php_name }}-curl"
+  - "{{ monsieurbiz_webserver_php_name }}-gd"
+  - "{{ monsieurbiz_webserver_php_name }}-mcrypt"
+#  - "{{ monsieurbiz_webserver_php_name }}-mysqlnd"
+  - "{{ monsieurbiz_webserver_php_name }}-tidy"
+  - "{{ monsieurbiz_webserver_php_name }}-intl"
+  - "{{ monsieurbiz_webserver_php_name }}-xsl"
+#  - "{{ monsieurbiz_webserver_php_name }}-pgresql"
+
+monsieurbiz_webserver_php_ini_files:
+  - "{{ monsieurbiz_webserver_php_directory }}cli/php.ini"
+  - "{{ monsieurbiz_webserver_php_directory }}fpm/php.ini"
+
+monsieurbiz_webserver_php_ini_config:
+  - regexp: '^;?(date\.timezone =).*\n'
+    replace: '\1 Europe/Paris\n'
+  - regexp: '^(post_max_size =).+\n'
+    replace: '\1 25M\n'
+  - regexp: '^;?(always_populate_raw_post_data =).+\n'
+    replace: '\1 24M\n'
+  - regexp: '^(upload_max_filesize =).+\n'
+    replace: '\1 -1\n'
+
+monsieurbiz_webserver_php_pool_default: "{{ monsieurbiz_webserver_php_directory }}fpm/pool.d/www.conf"
+
+# with trailing slash
+monsieurbiz_webserver_php_pool_path: "{{ monsieurbiz_webserver_php_directory }}fpm/pool.d/"

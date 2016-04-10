@@ -1,2 +1,10 @@
 ---
 # handlers file for monsieurbiz.webserver
+
+- name: restart webserver
+  service: name={{item}} state=restarted
+  become: yes
+  become_user: root
+  with_items:
+    - nginx
+    - "{{ monsieurbiz_webserver_php_name }}-fpm"
