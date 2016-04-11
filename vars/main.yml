@@ -1,10 +1,12 @@
 ---
 # vars file for monsieurbiz.webserver
 
-monsieurbiz_webserver_php_name: php7.0 # php7.0
+#monsieurbiz_webserver_php_name: php5
+monsieurbiz_webserver_php_name: php7.0
 
 # with trailing slash
-monsieurbiz_webserver_php_directory: /etc/php/7.0/ # /etc/php/7.0/
+#monsieurbiz_webserver_php_directory: /etc/php5/
+monsieurbiz_webserver_php_directory: /etc/php/7.0/
 
 monsieurbiz_webserver_projects:
   # Each project is identified by a simple ascii identifier

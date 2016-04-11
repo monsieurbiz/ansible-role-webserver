@@ -1,4 +1,4 @@
-# {{ ansible_managed }}
+; {{ ansible_managed }}
 [{{ item.0.user }}-{{ item.1.identifier }}]
 listen = /var/run/{{monsieurbiz_webserver_php_name}}-fpm__{{ item.0.user }}-{{ item.1.identifier }}.sock
 listen.owner = nginx
