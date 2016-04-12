@@ -19,16 +19,17 @@ monsieurbiz_webserver_php_name: php5 # php7.0
 monsieurbiz_webserver_php_directory: /etc/php5/ # /etc/php/7.0/
 
 monsieurbiz_webserver_php_packages:
-  - "{{ monsieurbiz_webserver_php_name }}-fpm"
   - "{{ monsieurbiz_webserver_php_name }}-cli"
   - "{{ monsieurbiz_webserver_php_name }}-curl"
   - "{{ monsieurbiz_webserver_php_name }}-gd"
-  - "{{ monsieurbiz_webserver_php_name }}-mcrypt"
-#  - "{{ monsieurbiz_webserver_php_name }}-mysqlnd"
-  - "{{ monsieurbiz_webserver_php_name }}-tidy"
   - "{{ monsieurbiz_webserver_php_name }}-intl"
+  - "{{ monsieurbiz_webserver_php_name }}-mcrypt"
+  - "{{ monsieurbiz_webserver_php_name }}-mysql"
+  - "{{ monsieurbiz_webserver_php_name }}-pgsql"
+  - "{{ monsieurbiz_webserver_php_name }}-redis"
+  - "{{ monsieurbiz_webserver_php_name }}-tidy"
   - "{{ monsieurbiz_webserver_php_name }}-xsl"
-#  - "{{ monsieurbiz_webserver_php_name }}-pgresql"
+  - "{{ monsieurbiz_webserver_php_name }}-fpm"
 
 monsieurbiz_webserver_php_ini_files:
   - "{{ monsieurbiz_webserver_php_directory }}cli/php.ini"
