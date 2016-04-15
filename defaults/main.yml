@@ -80,6 +80,8 @@ monsieurbiz_webserver_projects: []
 #        type: standard
 #        # Root directory
 #        root_dir: /vagrant/public/
+#        # Add some open_basedir directives to php
+#        open_basedir: ""
 #        # Logs directory
 #        log_dir: /vagrant/logs/
 #        # Server name / Domain name

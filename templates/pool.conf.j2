@@ -13,4 +13,4 @@ pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 pm.max_requests = 500
 chdir = {{ item.1.root_dir }}
-php_admin_value[open_basedir] = {{ item.1.root_dir }}:/tmp
+php_admin_value[open_basedir] = {{ item.1.root_dir }}:{% if item.1.open_basedir %}{{ item.1.open_basedir }}:{% endif %}/tmp
