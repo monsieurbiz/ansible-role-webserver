@@ -14,10 +14,6 @@ monsieurbiz_webserver_dotdeb_repositories:
   - "deb http://packages.dotdeb.org jessie all"
   - "deb-src http://packages.dotdeb.org jessie all"
 
-monsieurbiz_webserver_php_name: php5 # php7.0
-# with trailing slash
-monsieurbiz_webserver_php_directory: /etc/php5/ # /etc/php/7.0/
-
 monsieurbiz_webserver_php_packages:
   - "{{ monsieurbiz_webserver_php_name }}-cli"
   - "{{ monsieurbiz_webserver_php_name }}-curl"
