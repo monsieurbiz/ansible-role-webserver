@@ -9,7 +9,7 @@ Because of that we created this role. It allows you to customize in a simple way
 
 # Role Variables
 
-You can override all the variables in `defaults/main.yml` and `vars/main.yml`
+You can override all the variables in `defaults/main.yml` in tour own vars.
 
 ## Example Playbook
 
