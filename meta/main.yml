@@ -21,6 +21,4 @@ galaxy_info:
     - nginx
     - php
 
-dependencies:
-  - { role: 'monsieurbiz.ssl' }
-  - { role: 'monsieurbiz.mariadb' }
+dependencies: []
