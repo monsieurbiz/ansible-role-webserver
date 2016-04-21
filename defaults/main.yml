@@ -1,8 +1,6 @@
 ---
 # defaults file for monsieurbiz.webserver
 
-monsieurbiz_webserver_tags: [monsieurbiz, webserver, nginx, php]
-
 monsieurbiz_webserver_services:
   - nginx
   - "{{ monsieurbiz_webserver_php_name }}-fpm"

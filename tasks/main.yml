@@ -5,48 +5,48 @@
   become: yes
   become_user: root
   apt_key: url={{monsieurbiz_webserver_dotdeb_key_url}}
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Install dotdeb repository
   become: yes
   become_user: root
   apt_repository: repo='{{item}}'
   with_items: '{{monsieurbiz_webserver_dotdeb_repositories}}'
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Create nginx user in www-data group
   become: yes
   become_user: root
   user: name=nginx state=present createhome=no append=true groups=www-data
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Install nginx
   become: yes
   become_user: root
   apt: name=nginx state=latest
   notify: restart nginx
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Update nginx configuration
   become: yes
   become_user: root
   template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
   notify: restart nginx
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Set usage of the default vhost
   become: yes
   become_user: root
   file: name=/etc/nginx/sites-enabled/default state={{monsieurbiz_webserver_default_vhost_state}}
   notify: restart webserver
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Install PHP-FPM and packages
   become: yes
   become_user: root
   apt: name={{item}} state=latest
   with_items: '{{monsieurbiz_webserver_php_packages}}'
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Update php conf
   become: yes
@@ -59,14 +59,14 @@
     - '{{monsieurbiz_webserver_php_ini_files}}'
     - '{{monsieurbiz_webserver_php_ini_config}}'
   notify: restart webserver
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Disable default pool of PHP-FPM
   become: yes
   become_user: root
   command: mv {{monsieurbiz_webserver_php_pool_default}} {{monsieurbiz_webserver_php_pool_default}}.disabled creates={{monsieurbiz_webserver_php_pool_default}}.disabled
   notify: restart webserver
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 # Create environments
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -80,7 +80,7 @@
     home: "/home/{{ item.user }}"
     shell: "{{ item.shell }}"
   with_items: '{{ monsieurbiz_webserver_projects }}'
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Add users to group
   become: yes
@@ -93,7 +93,7 @@
     append: true
     groups: nginx
   with_items: '{{ monsieurbiz_webserver_projects }}'
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Create root dir
   become: yes
@@ -102,7 +102,7 @@
   with_subelements:
     - '{{ monsieurbiz_webserver_projects }}'
     - vhosts
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Change directories user/group
   become: yes
@@ -111,7 +111,7 @@
   with_subelements:
     - '{{ monsieurbiz_webserver_projects }}'
     - chown
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Create log dir
   become: yes
@@ -132,7 +132,7 @@
     - vhosts
   when: item.1.active
   notify: restart webserver
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Remove PHP-FPM conf for inactive vhosts
   become: yes
@@ -143,7 +143,7 @@
     - vhosts
   when: not item.1.active
   notify: restart webserver
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Create vhost
   become: yes
@@ -153,7 +153,7 @@
     - '{{ monsieurbiz_webserver_projects }}'
     - vhosts
   notify: restart webserver
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Active vhost
   become: yes
@@ -164,7 +164,7 @@
     - vhosts
   when: item.1.active
   notify: restart webserver
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Desactive vhost
   become: yes
@@ -174,13 +174,13 @@
     - '{{ monsieurbiz_webserver_projects }}'
     - vhosts
   when: not item.1.active
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
 #- name: Create certs directory
 #  become: yes
 #  become_user: root
 #  file: state=directory recurse=yes name=/etc/nginx/ssl/ group=nginx
-#  tags: monsieurbiz_webserver_tags
+#  tags: [monsieurbiz, webserver, nginx, php]
 
 #- name: Copy certificates
 #  become: yes
@@ -192,12 +192,12 @@
 #    group: nginx
 #    owner: nginx
 #  with_items: certs
-#  tags: monsieurbiz_webserver_tags
+#  tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Ensure services are running
   become: yes
   become_user: root
   service: name={{ item }} state=started enabled=yes
   with_items: '{{ monsieurbiz_webserver_services }}'
-  tags: monsieurbiz_webserver_tags
+  tags: [monsieurbiz, webserver, nginx, php]
 
