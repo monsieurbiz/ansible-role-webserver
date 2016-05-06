@@ -115,8 +115,8 @@
 
 - name: Create log dir
   become: yes
-  become_user: nginx
-  file: name={{ item.1.log_dir }} state=directory
+  become_user: "{{ item.0.user }}"
+  file: name={{ item.1.log_dir }} state=directory recurse=yes
   with_subelements:
     - '{{ monsieurbiz_webserver_projects }}'
     - vhosts
