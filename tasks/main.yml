@@ -27,6 +27,12 @@
   notify: restart nginx
   tags: [monsieurbiz, webserver, nginx, php]
 
+- name: Install apache2 utils (htpasswd…)
+  become: yes
+  become_user: root
+  apt: name=apache2-utils state=latest
+  tags: [monsieurbiz, webserver, nginx, php]
+
 - name: Update nginx configuration
   become: yes
   become_user: root
