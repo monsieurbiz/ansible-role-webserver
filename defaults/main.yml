@@ -43,7 +43,7 @@ monsieurbiz_webserver_php_ini_config:
   - regexp: '^;?(always_populate_raw_post_data =).+\n'
     replace: '\1 24M\n'
   - regexp: '^(upload_max_filesize =).+\n'
-    replace: '\1 -1\n'
+    replace: '\1 100M\n'
 
 monsieurbiz_webserver_php_pool_default: "{{ monsieurbiz_webserver_php_directory }}fpm/pool.d/www.conf"
 
