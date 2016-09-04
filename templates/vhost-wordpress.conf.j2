@@ -1,0 +1,27 @@
+# {{ ansible_managed }}
+{% set project = item.0 %}
+{% set vhost = item.1 %}
+
+server {
+    listen 80;
+
+    root {{ vhost.root_dir }};
+    index index.php index.html index.htm;
+
+    server_name {{ vhost.server_names }};
+
+    location / {
+        try_files $uri $uri/ /index.php;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass   unix:/var/run/{{monsieurbiz_webserver_php_name}}-fpm__{{ item.0.user }}-{{ item.1.identifier }}.sock;
+        fastcgi_read_timeout 600s;
+        fastcgi_connect_timeout 600s;
+        fastcgi_index index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
