@@ -21,6 +21,9 @@ server {
   
     root {{ vhost.root_dir }};
 
+    error_log {{ vhost.log_dir }}error.log;
+    access_log {{ vhost.log_dir }}access.log;
+
     index index.php;
     autoindex off;
     charset off;

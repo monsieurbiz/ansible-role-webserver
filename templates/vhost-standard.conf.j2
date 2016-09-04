@@ -18,8 +18,11 @@ server {
     ssl_certificate {{ vhost.cert.crt }};
     ssl_certificate_key {{ vhost.cert.key }};
 {% endif %}
-  
+
     root {{ vhost.root_dir }};
+
+    error_log {{ vhost.log_dir }}error.log;
+    access_log {{ vhost.log_dir }}access.log;
 
     index index.php;
     autoindex off;

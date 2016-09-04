@@ -10,6 +10,9 @@ server {
 
     server_name {{ vhost.server_names }};
 
+    error_log {{ vhost.log_dir }}error.log;
+    access_log {{ vhost.log_dir }}access.log;
+
     location / {
         try_files $uri $uri/ /index.php;
     }
