@@ -24,7 +24,7 @@
   become: yes
   become_user: root
   apt: name=nginx state=latest
-  notify: restart nginx
+  notify: restart webserver
   tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Install apache2 utils (htpasswd…)
@@ -37,7 +37,7 @@
   become: yes
   become_user: root
   template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
-  notify: restart nginx
+  notify: restart webserver
   tags: [monsieurbiz, webserver, nginx, php]
 
 - name: Set usage of the default vhost
