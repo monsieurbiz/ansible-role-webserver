@@ -30,7 +30,7 @@ monsieurbiz_webserver_php_packages:
   #- "{{ monsieurbiz_webserver_php_name }}-xml"
   - "{{ monsieurbiz_webserver_php_name }}-xsl"
   - "{{ monsieurbiz_webserver_php_name }}-fpm"
-  - "{{ monsieurbiz_webserver_php_name }}-zip"
+  #- "{{ monsieurbiz_webserver_php_name }}-zip"
 
 monsieurbiz_webserver_php_ini_files:
   - "{{ monsieurbiz_webserver_php_directory }}cli/php.ini"
