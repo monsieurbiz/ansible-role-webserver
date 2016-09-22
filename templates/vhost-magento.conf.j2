@@ -2,6 +2,15 @@
 {% set project = item.0 %}
 {% set vhost = item.1 %}
 
+map $http_host $mage_run_code {
+    hostnames;
+
+    default default;
+
+    #admin.* admin;
+    #fr.* fr;
+}
+
 server {
     listen *:80;
     # listen [::]:80 ipv6only=on;
@@ -69,6 +78,7 @@ server {
         fastcgi_connect_timeout 600s;
         fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
         fastcgi_param  MAGE_RUN_TYPE store;
+        fastcgi_param  MAGE_RUN_CODE $mage_run_code;
         {% if vhost.env == "dev" %}
         fastcgi_param  MAGE_IS_DEVELOPER_MODE 1;
         {% endif %}
