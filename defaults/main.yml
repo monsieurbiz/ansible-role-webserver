@@ -38,7 +38,7 @@ monsieurbiz_webserver_php_ini_files:
 
 monsieurbiz_webserver_php_ini_config:
   - regexp: '^;?(date\.timezone =).*\n'
-    replace: '\1 Europe/Paris\n'
+    replace: '\1 UTC\n'
   - regexp: '^(post_max_size =).+\n'
     replace: '\1 25M\n'
   - regexp: '^;?(always_populate_raw_post_data =).+\n'
