@@ -23,7 +23,7 @@ server {
     server_name {{ vhost.server_names }};
 
 {% if vhost.ssl %}
-    ssl on;
+    #ssl on;
     {% if vhost.cert.chain %}
     ssl_certificate {{ vhost.cert.chain }};
     {% else %}
