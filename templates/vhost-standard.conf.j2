@@ -32,6 +32,8 @@ server {
     autoindex off;
     charset off;
 
+    client_max_body_size 20M;
+
     add_header 'X-Content-Type-Options' 'nosniff';
     add_header 'X-XSS-Protection' '1; mode=block';
 

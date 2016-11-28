@@ -13,6 +13,8 @@ server {
     error_log {{ vhost.log_dir }}error.log;
     access_log {{ vhost.log_dir }}access.log;
 
+    client_max_body_size 20M;
+
     location / {
         try_files $uri $uri/ /index.php;
     }
