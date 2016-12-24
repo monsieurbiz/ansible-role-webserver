@@ -4,11 +4,26 @@
 
 server {
     listen 80;
+    # listen [::]:80 ipv6only=on;
 
-    root {{ vhost.root_dir }};
-    index index.php index.html index.htm;
+{% if vhost.ssl %}
+    listen *:443 ssl;
+    # listen [::]:443 ssl ipv6only=on;
+{% endif %}
 
     server_name {{ vhost.server_names }};
+
+{% if vhost.ssl %}
+    #ssl on;
+    {% if vhost.cert.chain %}
+    ssl_certificate {{ vhost.cert.chain }};
+    {% else %}
+    ssl_certificate {{ vhost.cert.crt }};
+    {% endif %}
+    ssl_certificate_key {{ vhost.cert.key }};
+{% endif %}
+
+    root {{ vhost.root_dir }};
 
     error_log {{ vhost.log_dir }}error.log;
     access_log {{ vhost.log_dir }}access.log;
