@@ -113,7 +113,7 @@
 - name: Change directories user/group
   become: yes
   become_user: root
-  file: name={{ item.1.path }} state=directory owner={{ item.1.user }} group={{ item.1.group }} recurse=yes
+  file: name={{ item.1 }} state=directory owner={{ item.0.user }} group={{ item.0.group }} recurse=yes
   with_subelements:
     - '{{ monsieurbiz_webserver_projects }}'
     - chown
