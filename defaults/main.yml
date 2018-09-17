@@ -9,13 +9,9 @@ monsieurbiz_webserver_default_vhost_state: absent
 
 monsieurbiz_webserver_dotdeb_key_url: http://www.dotdeb.org/dotdeb.gpg
 monsieurbiz_webserver_dotdeb_repositories:
-# Jessie
-  - "deb http://packages.dotdeb.org jessie all"
-  - "deb-src http://packages.dotdeb.org jessie all"
-# Wheezy
-#monsieurbiz_webserver_dotdeb_repositories:
-#  - "deb http://packages.dotdeb.org wheezy all"
-#  - "deb-src http://packages.dotdeb.org wheezy all"
+# ansible_distribution_release
+  - "deb http://packages.dotdeb.org {{ ansible_distribution_release }} all"
+  - "deb-src http://packages.dotdeb.org {{ ansible_distribution_release }} all"
 
 monsieurbiz_webserver_php_packages:
   - "{{ monsieurbiz_webserver_php_name }}-cli"
